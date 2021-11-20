@@ -25,7 +25,7 @@
 	<h4 v-if="todos.length === 0">Empty list.</h4>
 </template>
 
-<script>
+<script lang="ts">
 	import { ref } from 'vue';
 	export default {
 		name: 'App',
@@ -35,7 +35,8 @@
 				done: false,
 				content: 'Write a blog post'
 			}]
-			const todosData = JSON.parse(localStorage.getItem('todos')) || defaultData;
+			const todosLocalStorage = localStorage.getItem('todos');
+			const todosData = JSON.parse(todosLocalStorage) || defaultData;
 			const todos = ref(todosData);
 			function addTodo () {
 				if (newTodo.value) {
@@ -47,11 +48,11 @@
 				}
 				saveData();
 			}
-			function doneTodo (todo) {
+			function doneTodo (todo: any) {
 				todo.done = !todo.done
 				saveData();
 			}
-			function removeTodo (index) {
+			function removeTodo (index: any) {
 				todos.value.splice(index, 1);
 				saveData();
 			}
