@@ -1,21 +1,75 @@
-<script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" />
+	<h1>ToDo App</h1>
+	<form @submit.prevent="addTodo()">
+		<label>New ToDo </label>
+		<input
+			v-model="newTodo"
+			name="newTodo"
+			autocomplete="off"
+		>
+		<button>Add ToDo</button>
+	</form>
+	<h2>ToDo List</h2>
+	<ul>
+		<li
+			v-for="(todo, index) in todos"
+			:key="index"
+		>
+			<span
+				:class="{ done: todo.done }"
+				@click="doneTodo(todo)"
+			>{{ todo.content }}</span>
+			<button @click="removeTodo(index)">Remove</button>
+		</li>
+	</ul>
+	<h4 v-if="todos.length === 0">Empty list.</h4>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<script>
+	import { ref } from 'vue';
+	export default {
+		name: 'App',
+		setup () {
+			const newTodo = ref('');
+			const defaultData = [{
+				done: false,
+				content: 'Write a blog post'
+			}]
+			const todosData = JSON.parse(localStorage.getItem('todos')) || defaultData;
+			const todos = ref(todosData);
+			function addTodo () {
+				if (newTodo.value) {
+					todos.value.push({
+						done: false,
+						content: newTodo.value
+					});
+					newTodo.value = '';
+				}
+				saveData();
+			}
+			function doneTodo (todo) {
+				todo.done = !todo.done
+				saveData();
+			}
+			function removeTodo (index) {
+				todos.value.splice(index, 1);
+				saveData();
+			}
+			function saveData () {
+				const storageData = JSON.stringify(todos.value);
+				localStorage.setItem('todos', storageData);
+			}
+			return {
+				todos,
+				newTodo,
+				addTodo,
+				doneTodo,
+				removeTodo,
+				saveData
+			}
+		}
+	}
+</script>
+
+<style lang="scss" src="./App.scss" scoped>
 </style>
